@@ -35,11 +35,11 @@ namespace NoobSave
                 {
                     var encryptString = NoobSaveCrypter.EncryptJson(fsJsonPrinter.CompressedJson(data),
                         NoobSaveData.Instance.encryptionKey);
-                    File.WriteAllText(Application.persistentDataPath + "/save.json", encryptString);
+                    File.WriteAllText(Application.persistentDataPath + $"/{NoobSaveData.Instance.saveFileName}.json", encryptString);
                     return Task.CompletedTask;
                 }
 
-                File.WriteAllText(Application.persistentDataPath + "/save.json", fsJsonPrinter.CompressedJson(data));
+                File.WriteAllText(Application.persistentDataPath + $"/{NoobSaveData.Instance.saveFileName}.json", fsJsonPrinter.CompressedJson(data));
 
                 Debug.Log("Save file created." + Application.persistentDataPath);
             }
@@ -56,7 +56,7 @@ namespace NoobSave
         {
             try
             {
-                var filePath = Application.persistentDataPath + "/save.json";
+                var filePath = Application.persistentDataPath + $"/{NoobSaveData.Instance.saveFileName}.json";
 
                 if (File.Exists(filePath))
                 {
