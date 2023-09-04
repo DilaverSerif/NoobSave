@@ -1,5 +1,6 @@
 using System;
 using NoobSave;
+using NoobSave.Interfaces;
 using UnityEngine;
 
 public class ExampleSave : MonoBehaviour,INoobSaveable
@@ -16,17 +17,24 @@ public class ExampleSave : MonoBehaviour,INoobSaveable
             this.rotation = rotation;
         }
     }
-    
+
+    private void Start()
+    {
+        NoobSaveMain.Load();
+        Debug.Log( NoobSaveMain.GetSave<string>("NormalKeyTest"));
+    }
+
     public void Save()
     {
         var gbSave = new GameObjectSave(transform.position,transform.rotation.eulerAngles);
         NoobSaveMain.AddSave("ExampleSave",gbSave);
-        NoobSaveMain.AddSave("Berdirhan","Test");
+        NoobSaveMain.AddSave("InterfaceKeyTest","Interface is working!");
+        NoobSaveMain.AddSave("NormalKeyTest","Normal key is working!");
     }
 
     public void Load(ref SaveData saveData)
     {
-        Debug.Log(saveData.saveStructs[1].obj.ToString());
+        Debug.Log(saveData.GetSave<string>("InterfaceKeyTest"));
     }
     
 }

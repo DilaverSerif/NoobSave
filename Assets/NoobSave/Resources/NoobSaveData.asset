@@ -12,11 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7bd9e84f2da44c29a801dda2c8d9de5, type: 3}
   m_Name: NoobSaveData
   m_EditorClassIdentifier: 
-  saveFilePath: C:/Users/dilav/AppData/LocalLow/DefaultCompany/NoobSave/.json
+  saveFilePath: 
   savePath: Assets/NoobSave/Resources/NoobSaveData.asset
   saveFileName: save
   deletePlayerPrefsOnLoad: 1
   usingEncrypt: 1
   encryptionKey: an0vwOQC0xuUZtgZZgUwCU61QxOtDb6i
   saveData:
-    saveStructs: []
+    saveStructs:
+    - saveID: ExampleSave
+      saveValue: ExampleSave+GameObjectSave
+    - saveID: InterfaceKeyTest
+      saveValue: Interface is working!
+    - saveID: NormalKeyTest
+      saveValue: Normal key is working!

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FullSerializer;
+using NoobSave.Interfaces;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -51,7 +52,7 @@ namespace NoobSave
             return Task.CompletedTask;
         }
 
-        public static Task Load()
+        public static Task Load(bool test = false)
         {
             try
             {
@@ -63,7 +64,7 @@ namespace NoobSave
                     var jsonData = File.ReadAllText(filePath);
                     var serializer = new fsSerializer();
                     fsData data;
-                    
+
                     if (NoobSaveData.Instance.usingEncrypt)
                     {
                         var decryptString = NoobSaveCrypter.DecryptJson(jsonData, NoobSaveData.Instance.encryptionKey);
@@ -71,17 +72,20 @@ namespace NoobSave
                     }
                     else
                         data = fsJsonParser.Parse(jsonData);
-                    
+
                     serializer.TryDeserialize(data, ref result);
                     NoobSaveData.Instance.saveData = result;
 
                     foreach (var noobSaveStruct in result.saveStructs)
                         noobSaveStruct.GetValue();
 
-                    var saveObjects = Object.FindObjectsOfType<MonoBehaviour>().OfType<INoobSaveable>();
+                    if (!test)
+                    {
+                        var saveObjects = Object.FindObjectsOfType<MonoBehaviour>().OfType<INoobSaveable>();
 
-                    foreach (var saveObject in saveObjects)
-                        saveObject.Load(ref result);
+                        foreach (var saveObject in saveObjects)
+                            saveObject.Load(ref result);
+                    }
 
                     Debug.Log("Save file loaded.");
                 }
@@ -103,6 +107,26 @@ namespace NoobSave
         public static void AddSave(string key, object obj)
         {
             NoobSaveData.Instance.saveData.saveStructs.Add(new NoobSaveStruct(key, obj));
+        }
+
+        public static void RemoveSave(string key)
+        {
+            NoobSaveData.Instance.saveData.saveStructs.RemoveAll(x => x.saveID == key);
+        }
+
+        public static void ClearSave()
+        {
+            NoobSaveData.Instance.saveData.saveStructs.Clear();
+        }
+
+        public static bool ContainsSave(string key)
+        {
+            return NoobSaveData.Instance.saveData.saveStructs.Any(x => x.saveID == key);
+        }
+
+        public static T GetSave<T>(string key)
+        {
+            return (T)NoobSaveData.Instance.saveData.saveStructs.Find(x => x.saveID == key).obj;
         }
     }
 }

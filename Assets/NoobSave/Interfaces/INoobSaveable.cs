@@ -1,4 +1,4 @@
-namespace NoobSave
+namespace NoobSave.Interfaces
 {
     public interface INoobSaveable
     {

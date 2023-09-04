@@ -1,4 +1,5 @@
 using System.Text;
+using EasyButtons;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,6 +31,9 @@ namespace NoobSave
 
                 _instance = CreateInstance<NoobSaveData>();
                 _instance.name = "NoobSaveData";
+                if (_instance.savePath == "")
+                    _instance.savePath = SAVE_PATH;
+
                 AssetDatabase.CreateAsset(_instance, _instance.savePath);
                 AssetDatabase.SaveAssets();
 
@@ -39,11 +43,30 @@ namespace NoobSave
 
         private void OnEnable()
         {
+           ResetPaths();
+        }
+
+        [Button(nameof(ResetPaths))]
+        private void ResetPaths()
+        {
             if (saveFileName == "")
+            {
                 saveFileName = SAVE_FILENAME;
+                Debug.Log("Resetting save file name to default: " + saveFileName);
+            }
 
             if (saveFilePath == "")
+            {
                 saveFilePath = Application.persistentDataPath + $"/{saveFileName}.json";
+                Debug.Log("Resetting save file path to default: " + saveFilePath);
+            }
+        }
+
+        [Button(nameof(TestArea))]
+        public void TestArea(string key)
+        {
+            NoobSaveMain.Load(true);
+            Debug.Log(key+" <color=red>Key:</color>"+NoobSaveMain.GetSave<string>(key));
         }
         
     }
