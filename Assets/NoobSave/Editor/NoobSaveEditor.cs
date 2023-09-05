@@ -1,13 +1,15 @@
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 
-namespace NoobSave
+#if UNITY_EDITOR
+using UnityEditor;
+
+namespace NoobSave.Editor
 {
     public static class NoobSaveEditor
     {
         private static NoobSaveData _instance = NoobSaveData.Instance;
-        private static string SAVE_PATH => NoobSaveData.Instance.savePath;
+        private static string SAVEPATH => NoobSaveData.Instance.savePath;
 
         [MenuItem("Tools/Noob Save/Runtime Load")]
         public static void RunTimeLoad()
@@ -24,14 +26,14 @@ namespace NoobSave
         [MenuItem("Tools/Noob Save/Create NoobSaveData")]
         public static void CreateAsset()
         {
-            if (!Directory.Exists(SAVE_PATH))
+            if (!Directory.Exists(SAVEPATH))
             {
-                Directory.CreateDirectory(SAVE_PATH);
+                Directory.CreateDirectory(SAVEPATH);
                 Debug.Log("Created NoobSaveData folder");
             }
             
             _instance.name = nameof(NoobSaveData);
-            AssetDatabase.CreateAsset(_instance, SAVE_PATH);
+            AssetDatabase.CreateAsset(_instance, SAVEPATH);
             AssetDatabase.SaveAssets();
 
             Debug.Log("Created NoobSaveData asset");
@@ -69,3 +71,4 @@ namespace NoobSave
         }
     }
 }
+#endif

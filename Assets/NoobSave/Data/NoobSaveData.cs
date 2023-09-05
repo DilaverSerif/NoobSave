@@ -33,10 +33,11 @@ namespace NoobSave
                 _instance.name = "NoobSaveData";
                 if (_instance.savePath == "")
                     _instance.savePath = SAVE_PATH;
-
+#if UNITY_EDITOR
                 AssetDatabase.CreateAsset(_instance, _instance.savePath);
                 AssetDatabase.SaveAssets();
-
+#endif
+                
                 return _instance;
             }
         }
