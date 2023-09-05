@@ -35,11 +35,13 @@ namespace NoobSave
                 {
                     var encryptString = NoobSaveCrypter.EncryptJson(fsJsonPrinter.CompressedJson(data),
                         NoobSaveData.Instance.encryptionKey);
-                    File.WriteAllText(Application.persistentDataPath + $"/{NoobSaveData.Instance.saveFileName}.json", encryptString);
+                    File.WriteAllText(Application.persistentDataPath + $"/{NoobSaveData.Instance.saveFileName}.json",
+                        encryptString);
                     return Task.CompletedTask;
                 }
 
-                File.WriteAllText(Application.persistentDataPath + $"/{NoobSaveData.Instance.saveFileName}.json", fsJsonPrinter.CompressedJson(data));
+                File.WriteAllText(Application.persistentDataPath + $"/{NoobSaveData.Instance.saveFileName}.json",
+                    fsJsonPrinter.CompressedJson(data));
 
                 Debug.Log("Save file created." + Application.persistentDataPath);
             }
@@ -104,14 +106,32 @@ namespace NoobSave
             return Task.CompletedTask;
         }
 
-        public static void AddSave(string key, object obj)
+        public static void SetSave(string key, object obj)
         {
+            var containsSave = ContainsSave(key);
+            
+            if (containsSave.Item1)
+            {
+                Debug.LogWarning($"NoobSave: {key} already exists in save data so it will be replaced.");
+                NoobSaveData.Instance.saveData.saveStructs[containsSave.Item2] = new NoobSaveStruct(key, obj);
+                return;
+            }
+
             NoobSaveData.Instance.saveData.saveStructs.Add(new NoobSaveStruct(key, obj));
         }
 
         public static void RemoveSave(string key)
         {
-            NoobSaveData.Instance.saveData.saveStructs.RemoveAll(x => x.saveID == key);
+            var findValue = 
+                (NoobSaveData.Instance.saveData.saveStructs.FirstOrDefault(x => x.saveID == key));
+
+            if (findValue.Equals(default(NoobSaveStruct)))
+            {
+                Debug.LogError($"NoobSave: {key} not found in save data.");
+                return;
+            }
+
+            NoobSaveData.Instance.saveData.saveStructs.Remove(findValue);
         }
 
         public static void ClearSave()
@@ -119,14 +139,45 @@ namespace NoobSave
             NoobSaveData.Instance.saveData.saveStructs.Clear();
         }
 
-        public static bool ContainsSave(string key)
+        public static (bool,int) ContainsSave(string key)
         {
-            return NoobSaveData.Instance.saveData.saveStructs.Any(x => x.saveID == key);
+            var index = -1;
+            var findValue = NoobSaveData.Instance.saveData.saveStructs.FirstOrDefault(x => x.saveID == key);
+            if(!findValue.Equals(default(NoobSaveStruct)))
+                index = NoobSaveData.Instance.saveData.saveStructs.IndexOf(findValue);
+            
+            return (index != -1,index);
         }
 
         public static T GetSave<T>(string key)
         {
-            return (T)NoobSaveData.Instance.saveData.saveStructs.Find(x => x.saveID == key).obj;
+            if (NoobSaveData.Instance.saveData.saveStructs.Count == 0)
+            {
+                Debug.LogWarning("NoobSave: Save data is empty.");
+                return default;
+            }
+            
+            var findValue = NoobSaveData.Instance.saveData.saveStructs.FirstOrDefault(x => x.saveID == key).obj;
+
+            if (findValue != null) return (T)findValue;
+
+            Debug.LogWarning($"NoobSave: {key} not found in save data.");
+            return default;
+        }
+        
+        public static int GetIntSave(string key)
+        {
+           return GetSave<int>(key);
+        }
+        
+        public static float GetFloatSave(string key)
+        {
+            return GetSave<float>(key);
+        }
+        
+        public static string GetStringSave(string key)
+        {
+            return GetSave<string>(key);
         }
     }
 }
