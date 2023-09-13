@@ -24,6 +24,8 @@ namespace NoobSave
         
         public void GetValue()
         {
+            if(obj == null) 
+                return;
             saveValue = obj.ToString();
         }
     }
